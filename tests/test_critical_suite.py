@@ -24,7 +24,7 @@ appium_service = None
 driver = None
 
 
-def take_screenshot(name: str):
+def take_screenshot(driver, name: str):
     """Take a screenshot and attach it to the Allure report"""
     if driver:
         try:
@@ -56,9 +56,8 @@ def wait_for_element(driver, locator, timeout=60):
         print(f"Timeout waiting for element: {locator}")
         return None
 
-def restart_app():
+def restart_app(driver):
     """Restart the app using the driver"""
-    global driver
     if driver:
         try:
             driver.terminate_app('com.photobook.android.staging')
@@ -68,49 +67,43 @@ def restart_app():
         except Exception as e:
             print(f"Error restarting app: {str(e)}")
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_teardown():
-    global appium_service, driver
+@pytest.fixture(scope="session")
+def driver():
+    """Session-level fixture for Appium driver"""
+    appium_host = os.getenv('APPIUM_HOST', 'host.docker.internal')
+    appium_port = os.getenv('APPIUM_PORT', '4723')
+    url = f'http://{appium_host}:{appium_port}'
 
-    # Start Appium service
-    appium_service = AppiumService()
-    appium_service.start()
 
-    # Appium capabilities
     cap: Dict[str, Any] = {
         'platformName': "Android",
         'automationName': "UiAutomator2",
-        'deviceName': "emulator-5554",
+        'deviceName': os.getenv('ANDROID_DEVICE', 'emulator-5554'),
         'appPackage': "com.photobook.android.staging",
         'appActivity': "com.photobook.android.page.applaunch.AppLaunchActivity",
+        'uiautomator2ServerLaunchTimeout': 120000,  # Increased to 120 seconds
+        'uiautomator2ServerInstallTimeout': 120000,
+        'adbExecTimeout': 120000,
+        'appWaitActivity': '*',  # Add this to handle activity transitions
         'noReset': False,
-        'autoGrantPermissions': True,
-        'uiautomator2ServerInstallTimeout': 60000,
-        'adbExecTimeout': 60000
+        'autoGrantPermissions': True
     }
 
-    # Initialize driver with options
-    url = 'http://127.0.0.1:4723'
-    options = AppiumOptions().load_capabilities(cap)
-    driver = webdriver.Remote(url, options=options)
 
+    driver = webdriver.Remote(url, options=AppiumOptions().load_capabilities(cap))
     yield driver
+    driver.quit()
 
-    # Teardown
-    if driver:
-        driver.quit()
-    if appium_service:
-        appium_service.stop()
 
 @pytest.fixture(autouse=True)
-def restart_app_before_test():
+def restart_app_before_test(driver):
     """Fixture to restart app before each test"""
-    restart_app()
+    restart_app(driver)
     yield
 
 class TestPhotobook:
     """Test class containing all Critical-priority test cases"""
-    def select_country(self):
+    def select_country(self, driver):
         select_country = wait_for_element(driver,
                                           (AppiumBy.ID, "com.photobook.android.staging:id/countryArrowImageView"))
         select_country.click()
@@ -137,7 +130,7 @@ class TestPhotobook:
         el8 = wait_for_element(driver, (AppiumBy.ACCESSIBILITY_ID, "Home"))
         el8.click()
 
-    def signup_user(self, first_name, last_name, email, password):
+    def signup_user(self, driver, first_name, last_name, email, password):
         print("Begin TCA1001_SIGNUP test execution...")
         account = wait_for_element(driver, (AppiumBy.ACCESSIBILITY_ID, "Account"))
         account.click()
@@ -194,7 +187,7 @@ class TestPhotobook:
         time.sleep(3)
 
 
-    def login_user(self, email, password):
+    def login_user(self, driver, email, password):
         """Common login function"""
         print(f"Logging in with email: {email}")
 
@@ -223,7 +216,7 @@ class TestPhotobook:
         time.sleep(3)
 
 
-    def logout_user(self):
+    def logout_user(self, driver):
         """Common logout function"""
         print("Logging out...")
         time.sleep(7)
@@ -254,16 +247,16 @@ class TestPhotobook:
 
     @pytest.mark.test_id("TCA1002_LOGIN")
     @allure.severity(Severity.CRITICAL)
-    def test_TCA1002_LOGIN(self):
+    def test_TCA1002_LOGIN(self, driver):
         """TCA1002_LOGIN : Login into PB App"""
         try:
             print("Begin TCA1002_LOGIN test execution...")
-            self.select_country()
-            self.login_user("autobots_ui_login@photobookworldwide.com", "Testing@123")
-            self.logout_user()
+            self.select_country(driver)
+            self.login_user(driver, "autobots_ui_login@photobookworldwide.com", "Testing@123")
+            self.logout_user(driver)
             print("TCA1002_LOGIN test execution completed successfully!")
         except Exception as e:
-            take_screenshot("TCA1002_LOGIN_failure")
+            take_screenshot(driver, "TCA1002_LOGIN_failure")
             pytest.fail(f"TCA1002_LOGIN failed: {str(e)}")
 
 
