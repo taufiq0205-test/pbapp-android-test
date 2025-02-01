@@ -19,6 +19,8 @@ from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from tests.Medium.TCA3002_ADD_ADDRESS import AddAddress
+
 # Global variables
 appium_service = None
 driver = None
@@ -101,7 +103,7 @@ def restart_app_before_test(driver):
     restart_app(driver)
     yield
 
-@pytest.mark.critical
+@pytest.mark.medium
 class TestPhotobook:
     """Test class containing all Critical-priority test cases"""
     def select_country(self, driver):
@@ -246,19 +248,21 @@ class TestPhotobook:
         print("Successfully logged out!")
         time.sleep(2)
 
-    @pytest.mark.test_id("TCA1002_LOGIN")
-    @allure.severity(Severity.CRITICAL)
-    def test_TCA1002_LOGIN(self, driver):
-        """TCA1002_LOGIN : Login into PB App"""
+    @pytest.mark.test_id("TCA3002_ADD_ADDRESS")
+    @allure.severity(Severity.NORMAL)
+    def test_TCA3002_ADD_ADDRESS(self, driver):
+        """TCA3002_ADD_ADDRESS : Add Address """
         try:
-            print("Begin TCA1002_LOGIN test execution...")
+            print("Begin TCA3002_ADD_ADDRESS test execution...")
             self.select_country(driver)
-            self.login_user(driver, "autobots_ui_login@photobookworldwide.com", "Testing@123")
+            self.login_user(driver,"autobots_ui_editaddressbook@photobookworldwide.com", "Testing@123")
+            add_address = AddAddress()
+            add_address.test_TCA3002_ADD_ADDRESS(driver)
             self.logout_user(driver)
-            print("TCA1002_LOGIN test execution completed successfully!")
+            print("TCA3002_ADD_ADDRESS test execution completed successfully!")
         except Exception as e:
-            take_screenshot(driver, "TCA1002_LOGIN_failure")
-            pytest.fail(f"TCA1002_LOGIN failed: {str(e)}")
+            take_screenshot(driver, "TCA3002_ADD_ADDRESS_failure")
+            pytest.fail(f"TCA3002_ADD_ADDRESS failed: {str(e)}")
 
 
 if __name__ == "__main__":

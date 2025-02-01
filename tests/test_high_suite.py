@@ -1,5 +1,4 @@
 import os
-import sys
 import time
 from datetime import datetime
 from typing import Any, Dict
@@ -9,7 +8,6 @@ import pytest
 from allure_commons.types import Severity
 from appium import webdriver
 from appium.options.common import AppiumOptions
-from appium.webdriver.appium_service import AppiumService
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import ActionChains
@@ -18,6 +16,8 @@ from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+
+from tests.High.TCA2004_GOOGLE_PROJECT import GoogleProject
 
 # Global variables
 appium_service = None
@@ -101,7 +101,7 @@ def restart_app_before_test(driver):
     restart_app(driver)
     yield
 
-@pytest.mark.critical
+@pytest.mark.high
 class TestPhotobook:
     """Test class containing all Critical-priority test cases"""
     def select_country(self, driver):
@@ -246,24 +246,26 @@ class TestPhotobook:
         print("Successfully logged out!")
         time.sleep(2)
 
-    @pytest.mark.test_id("TCA1002_LOGIN")
-    @allure.severity(Severity.CRITICAL)
-    def test_TCA1002_LOGIN(self, driver):
-        """TCA1002_LOGIN : Login into PB App"""
+
+    @pytest.mark.test_id("TCA2004_GOOGLE_PROJECT")
+    @allure.severity(Severity.NORMAL)
+    def test_TCA2004_GOOGLE_PROJECT(self, driver):
+        """TCA2004_GOOGLE_PROJECT : Create Project using Google Account"""
         try:
-            print("Begin TCA1002_LOGIN test execution...")
+            print("Begin TCA2004_GOOGLE_PROJECT test execution...")
             self.select_country(driver)
-            self.login_user(driver, "autobots_ui_login@photobookworldwide.com", "Testing@123")
+            google_project = GoogleProject()
+            google_project.test_TCA2004_GOOGLE_PROJECT(driver)
             self.logout_user(driver)
-            print("TCA1002_LOGIN test execution completed successfully!")
+            print("TCA2004_GOOGLE_PROJECT test execution completed successfully!")
         except Exception as e:
-            take_screenshot(driver, "TCA1002_LOGIN_failure")
-            pytest.fail(f"TCA1002_LOGIN failed: {str(e)}")
+            take_screenshot(driver, "TCA2004_GOOGLE_PROJECT_failure")
+            pytest.fail(f"TCA2004_GOOGLE_PROJECT failed: {str(e)}")
 
 
 if __name__ == "__main__":
     # Run specific test case by ID
-    pytest.main(["-v", "-k", "test_id('TCA1002_LOGIN')", __file__])
+    pytest.main(["-v", "-k", "test_id('TCA1004_GOOGLE_PROJECT')", __file__])
 
     # Or run all tests
     # pytest.main(["-v", __file__])
