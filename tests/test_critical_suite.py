@@ -70,7 +70,6 @@ def restart_app(driver):
 @pytest.fixture(scope="session")
 def driver():
     """Session-level fixture for Appium driver"""
-    appium_host = os.getenv('APPIUM_HOST', 'appium-server')
     appium_host = os.getenv('APPIUM_HOST', 'host.docker.internal')
     appium_port = os.getenv('APPIUM_PORT', '4723')
     url = f'http://{appium_host}:{appium_port}'

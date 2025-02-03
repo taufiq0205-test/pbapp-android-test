@@ -1,13 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: medium-tests
+  name: critical-tests
 spec:
+  backoffLimit: 0
   template:
     spec:
       containers:
       - name: test-runner
-        image: autobots/pbapp-medium:latest
+        image: registry.photobook.dev/autobots/android-critical:latest
         env:
         - name: APPIUM_HOST
           value: "appium-server.android-tests.svc.cluster.local"
@@ -15,6 +16,13 @@ spec:
           value: "emulator-5554"
         securityContext:
           privileged: true
+        volumeMounts:
+        - name: test-results
+          mountPath: /app/allure-results
+      volumes:
+      - name: test-results
+        persistentVolumeClaim:
+          claimName: test-results-pvc
       restartPolicy: Never
       nodeSelector:
         device-type: android-emulator
