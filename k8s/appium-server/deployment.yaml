@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appium-server
+spec:
+  replicas: 2  # Multiple instances for parallel testing
+  selector:
+    matchLabels:
+      app: appium-server
+  template:
+    metadata:
+      labels:
+        app: appium-server
+    spec:
+      containers:
+      - name: appium
+        image: appium/appium:2.0
+        ports:
+        - containerPort: 4723
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"

@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: critical-tests
+spec:
+  backoffLimit: 0  # No retries for test failures
+  template:
+    spec:
+      containers:
+      - name: test-runner
+        image: registry.photobook.com/autobots/pbapp-critical:latest
+        env:
+        - name: APPIUM_HOST
+          value: "appium-server"  # Kubernetes service name
+        - name: ANDROID_DEVICE
+          valueFrom:
+            configMapKeyRef:
+              name: test-config
+              key: android.device
+        volumeMounts:
+        - name: allure-results
+          mountPath: /allure-results
+      volumes:
+      - name: allure-results
+        emptyDir: {}
+      restartPolicy: Never

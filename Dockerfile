@@ -10,6 +10,9 @@ ENV PYTHONPATH=/app
 FROM base AS critical
 COPY tests/test_critical_suite.py /app/tests/
 COPY tests/Critical /app/tests/Critical
+LABEL test_priority=critical \
+      maintainer="autobots@photobook" \
+      test_suite="critical-tests"
 CMD ["pytest", "-v", "-m", "critical", "/app/tests/test_critical_suite.py"]
 
 # High priority stage

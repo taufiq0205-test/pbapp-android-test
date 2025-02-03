@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mobile-tests
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/taufiq0205-test/pbapp-android-test.git
+    path: pbapp-android-test/k8s
+    targetRevision: HEAD
+    kustomize:
+      namePrefix: mobile-
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mobile-tests
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

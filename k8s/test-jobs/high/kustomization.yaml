@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- test-job.yaml
+images:
+- name: pbapp-high
+  newName: autobots/pbapp-high
+  newTag: latest
