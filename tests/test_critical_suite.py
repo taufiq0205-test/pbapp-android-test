@@ -74,7 +74,6 @@ def driver():
     appium_port = os.getenv('APPIUM_PORT', '4723')
     url = f'http://{appium_host}:{appium_port}'
 
-
     cap: Dict[str, Any] = {
         'platformName': "Android",
         'automationName': "UiAutomator2",

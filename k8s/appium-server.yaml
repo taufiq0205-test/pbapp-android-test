@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appium-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appium
+  template:
+    metadata:
+      labels:
+        app: appium
+    spec:
+      containers:
+      - name: appium
+        image: appium/appium:latest
+        ports:
+        - containerPort: 4723
+        command: ["appium"]
+        args: ["--address", "0.0.0.0", "--port", "4723", "--relaxed-security"]

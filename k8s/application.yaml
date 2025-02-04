@@ -1,21 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: android-automation
+  name: appium-tests
 spec:
   project: default
   source:
     repoURL: https://github.com/taufiq0205-test/pbapp-android-test.git
-    path: argo
+    path: k8s
     targetRevision: feature/argocd
-    kustomize:
-      version: v4.5.7
   destination:
     server: https://kubernetes.default.svc
-    namespace: android-tests
+    namespace: default
   syncPolicy:
     automated:
       selfHeal: true
       prune: true
-    syncOptions:
-    - CreateNamespace=true
