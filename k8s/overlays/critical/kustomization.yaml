@@ -2,17 +2,17 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 namespace: mobile-testing
-bases:
-- ../../base
 
 patches:
-- target:
-    kind: Job
-    name: mobile-test
-  patch: |-
+- patch: |-
     - op: replace
       path: /metadata/name
       value: critical-test
     - op: replace
       path: /spec/template/spec/containers/0/image
       value: taufiq0205/pbapp-critical:latest
+  target:
+    kind: Job
+    name: mobile-test
+resources:
+- ../../base
