@@ -1,17 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: appium-tests
+  name: mobile-testing
+  namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/taufiq0205-test/pbapp-android-test.git
-    path: k8s
     targetRevision: feature/argocd
+    path: k8s/overlays
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: mobile-testing
   syncPolicy:
     automated:
-      selfHeal: true
       prune: true
+      selfHeal: true

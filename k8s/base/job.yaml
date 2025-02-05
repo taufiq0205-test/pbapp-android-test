@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mobile-test
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+      - name: test-runner
+        image: pbapp-test
+        env:
+        - name: APPIUM_HOST
+          value: host.docker.internal
+        - name: ANDROID_DEVICE
+          value: emulator-5554
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: kvm
+          mountPath: /dev/kvm
+      volumes:
+      - name: kvm
+        hostPath:
+          path: /dev/kvm
+      restartPolicy: Never
