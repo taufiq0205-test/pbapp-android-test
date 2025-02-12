@@ -1,4 +1,5 @@
 import os
+import platform
 import sys
 import time
 from datetime import datetime
@@ -67,17 +68,30 @@ def restart_app(driver):
         except Exception as e:
             print(f"Error restarting app: {str(e)}")
 
+def get_android_emulator_port():
+    """Detect Android emulator port based on OS"""
+    system = platform.system()
+    if system == "Windows":
+        return "5556" # Current port for Android emulator on Windows
+    elif system == "Darwin": # MacOS
+        return "5554" # Default port for Android emulator on Mac
+    else:
+        return "5554" # Default port for Android Emulator
+
+
+
 @pytest.fixture(scope="session")
 def driver():
     """Session-level fixture for Appium driver"""
     appium_host = os.getenv('APPIUM_HOST', 'host.docker.internal')
     appium_port = os.getenv('APPIUM_PORT', '4723')
+    emulator_port = get_android_emulator_port() # Get dynamic port
     url = f'http://{appium_host}:{appium_port}'
 
     cap: Dict[str, Any] = {
         'platformName': "Android",
         'automationName': "UiAutomator2",
-        'deviceName': os.getenv('ANDROID_DEVICE', 'emulator-5554'),
+        'deviceName': os.getenv('ANDROID_DEVICE', f'emulator-{emulator_port}'), # dynamic deviceName
         'appPackage': "com.photobook.android.staging",
         'appActivity': "com.photobook.android.page.applaunch.AppLaunchActivity",
         'uiautomator2ServerLaunchTimeout': 120000,  # Increased to 120 seconds
