@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: mobile-test
 spec:
-  backoffLimit: 0
+  backoffLimit: 2
   template:
     spec:
       containers:
@@ -14,6 +14,10 @@ spec:
           value: host.docker.internal
         - name: ANDROID_DEVICE
           value: emulator-5554
+        - name: RETRY_COUNT
+          value: "3"
+        - name: RETRY_DELAY
+          value: "30"
         securityContext:
           privileged: true
         volumeMounts:
