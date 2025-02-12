@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  pbapp-critical:
+    image: taufiq0205/pbapp-critical
+    ports:
+      - "4723:4723"
+    environment:
+      APPIUM_HOST: host.docker.internal
+      APPIUM_PORT: 4723
+      ANDROID_DEVICE: emulator-5556
