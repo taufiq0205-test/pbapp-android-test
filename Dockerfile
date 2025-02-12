@@ -8,6 +8,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY tests/conftest.py tests/pytest.ini /app/tests/
 ENV PYTHONPATH=/app
+ENV ANDROID_DEVICE=emulator-5554
 
 # Critical priority stage
 FROM base AS critical
