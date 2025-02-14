@@ -8,3 +8,6 @@ services:
       APPIUM_HOST: host.docker.internal
       APPIUM_PORT: 4723
       ANDROID_DEVICE: emulator-5556
+    volumes:
+      - ./allure-results:/app/allure-results
+    command: pytest -v -m tests/test_critical_suite.py --alluredir=/app/allure-results
