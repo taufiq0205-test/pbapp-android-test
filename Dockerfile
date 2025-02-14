@@ -3,7 +3,7 @@ FROM python:3.9-slim AS base
 WORKDIR /app
 RUN apt-get update && \
     apt-get install -y android-sdk-platform-tools && \
-    apt-get clean
+    apt-get clean \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY tests/conftest.py tests/pytest.ini /app/tests/
