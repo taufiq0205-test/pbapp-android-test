@@ -41,7 +41,7 @@ def take_screenshot(driver, name: str):
             driver.save_screenshot(filepath)
 
             # Attach to Allure report
-            allure.attach.file(filepath, name=filename, attachment_type=allure.attachment_type.PNG)
+            allure.attach.file(filepath, source=open(filepath, 'rb').read(), name=filename, attachment_type=allure.attachment_type.PNG)
             print(f"Screenshot saved: {filepath}")
         except Exception as e:
             print(f"Failed to take screenshot: {str(e)}")
@@ -115,6 +115,7 @@ def restart_app_before_test(driver):
     yield
 
 @pytest.mark.critical
+@allure.feature("Critical Test Cases of Photobook App")
 class TestPhotobook:
     """Test class containing all Critical-priority test cases"""
     def select_country(self, driver):
@@ -261,6 +262,8 @@ class TestPhotobook:
 
     @pytest.mark.test_id("TCA1002_LOGIN")
     @allure.severity(Severity.CRITICAL)
+    @allure.title("Login to Photobook Android")
+    @allure.description("Verify user can login to Photobook app")
     def test_TCA1002_LOGIN(self, driver):
         """TCA1002_LOGIN : Login into PB App"""
         try:
@@ -271,6 +274,7 @@ class TestPhotobook:
             print("TCA1002_LOGIN test execution completed successfully!")
         except Exception as e:
             take_screenshot(driver, "TCA1002_LOGIN_failure")
+            allure.attach(str(e), name="Exception Details", attachment_type=allure.attachment_type.TEXT)
             pytest.fail(f"TCA1002_LOGIN failed: {str(e)}")
 
 
